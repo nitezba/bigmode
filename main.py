@@ -15,11 +15,8 @@ WINDOW_WIDTH = TILE_SIZE * data["world"]["window_data"]["tiles_across"]
 WINDOW_HEIGHT = TILE_SIZE * data["world"]["window_data"]["tiles_down"]
 
 pygame.init() 
-# WINDOW_WIDTH = 640  # 40 tiles across
-# WINDOW_HEIGHT = 480 # 30 tiles down
-# TILE_SIZE = 16
 
-display_window = pygame.display.set_mode((WINDOW_WIDTH , WINDOW_HEIGHT ), 0, 32)
+display_window = pygame.display.set_mode((WINDOW_WIDTH * 2, WINDOW_HEIGHT * 2), 0, 32)
 raw_window = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
 
 # =====================================================
