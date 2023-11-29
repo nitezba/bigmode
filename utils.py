@@ -1,4 +1,6 @@
 import pygame, os, random, math, json
+from constants import *
+
 
 BASE_PATH = './assets/'
 
@@ -6,7 +8,7 @@ BASE_PATH = './assets/'
 # ============ MISC HELPER FUNCTIONS ==================
 # =====================================================
 def load_image(path):
-    img : Surface = pygame.image.load(BASE_PATH + path).convert()
+    img : pygame.Surface = pygame.image.load(BASE_PATH + path).convert()
     img.set_colorkey((0, 0, 0))
     return img
 
@@ -61,8 +63,8 @@ class World() :
     # NOTE : tile_map dict will have raw tuples as keys, while json will have strings of tuples as keys
         # ** Instance variable
         self.tile_map = {}
-        for y in range(world["window_data"]["tiles_down"]) :
-            for x in range(world["window_data"]["tiles_across"]) :
+        for y in range(TILES_DOWN) :
+            for x in range(TILES_ACROSS) :
                 # DEFAULT VALUE POPULATION
                 if stringFromTuple((x, y)) not in world["map"].keys():
                     self.tile_map[(x, y)] = 0

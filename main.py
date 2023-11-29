@@ -1,20 +1,9 @@
 import pygame, sys, random, math, wave, os, json
-clock = pygame.time.Clock()
-
-# NOTE - could be made more flexible by specifying top down or side scrolling
-
 from pygame.locals import *
 from utils import *
+from constants import *
 
-mapFile = open('data.json')
-data = json.load(mapFile)
-mapFile.close()
-TILE_SIZE = data["world"]["tile_data"]["size"]
-
-WINDOW_WIDTH = TILE_SIZE * data["world"]["window_data"]["tiles_across"]
-WINDOW_HEIGHT = TILE_SIZE * data["world"]["window_data"]["tiles_down"]
-
-TIMER_EVENT = pygame.event.custom_type()
+clock = pygame.time.Clock()
 
 pygame.init() 
 
