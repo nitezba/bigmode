@@ -11,10 +11,15 @@
 
         },
         "tile_assets" : {
-            "base tile" : "base_tile.png"
+            "dark base tile" : "d_base_tile.png",
+            "light base tile" : "l_base_tile.png"
         },        
         "assets" : {
-            
+            "dark player" : "d_player.png",
+            "light player" : "l_player.png",
+            "animations" : {
+                "dark player walk" : "d_player_walk"
+            } 
         }
     }
 }
