@@ -5,7 +5,9 @@
         },
         "tile_assets" : {
             "dark base tile" : "d_base_tile.png",
-            "light base tile" : "l_base_tile.png"
+            "light base tile" : "l_base_tile.png",
+            "dark mountain" : "d_mountain.png",
+            "light mountain" : "l_mountain.png"
         },        
         "assets" : {
             "dark player" : "d_player.png",

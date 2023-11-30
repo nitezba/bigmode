@@ -1,5 +1,7 @@
 import pygame, os, random, math, json
+
 from constants import *
+from helper_structures import *
 
 
 BASE_PATH = './assets/'
@@ -32,6 +34,7 @@ def stringFromTuple (t : tuple) -> str:
 # ============ WORLD CLASS ============================
 # =====================================================
 class World() :
+    # ============================ init function ============================
     def __init__(self) -> None:
     # ========= OPEN FILE =========
         mapFile = open('data.json')
@@ -71,6 +74,80 @@ class World() :
                 
         self.mode = 0
 
+    # ============================ get neighbors function ============================
+    def getTileNeighbors(self, coord: tuple) -> dict :
+        tiles = {
+            "top" : {},
+            "middle" : {},
+            "bottom" : {}
+        }
+        
+        tiles["top"]["left"] = (coord[0] - 1, coord[1] - 1) if coord[0] > 0 and coord[1] > 0 else None
+        tiles["top"]["middle"] = (coord[0], coord[1] - 1) if coord[1] > 0 else None
+        tiles["top"]["right"] = (coord[0] + 1, coord[1] - 1) if coord[0] < WINDOW_WIDTH / TILE_SIZE - 1 and coord[1] > 0 else None
+       
+        tiles["middle"]["left"] = (coord[0] - 1, coord[1]) if coord[0] > 0  else None
+        tiles["middle"]["middle"] = None
+        tiles["middle"]["right"] = (coord[0] + 1, coord[1]) if coord[0] < WINDOW_WIDTH / TILE_SIZE - 1 else None
+
+        tiles["bottom"]["left"] = (coord[0] - 1, coord[1] + 1) if coord[0] > 0 and coord[1] < WINDOW_HEIGHT / TILE_SIZE - 1 else None
+        tiles["bottom"]["middle"] = (coord[0], coord[1] + 1) if coord[1] < WINDOW_HEIGHT / TILE_SIZE - 10 else None
+        tiles["bottom"]["right"] = (coord[0] + 1, coord[1] + 1) if coord[0] < WINDOW_WIDTH / TILE_SIZE - 1 and coord[1] < WINDOW_HEIGHT / TILE_SIZE - 1 else None
+         
+        return tiles
+    
+    # ============================ binary space partition function ============================
+    def spacePartition(self, root : partitionCell) -> Tree: 
+        tree = []
+        leaves = []
+        frontier = []
+        frontier.append(root)
+
+        # ------------- tree creation -------------
+        while frontier:
+            node : partitionCell = frontier[0]
+            frontier.remove(frontier[0])
+            if node.isDonePartitioning() :
+                leaves.append(node)
+                tree.append(node)
+                continue
+
+            orientation = 1 if random.random() >= .5 else 0
+            # extract middle two quarters of space
+            space = node.getVerticalRange() if orientation == 1 else node.getHorizontalRange()
+            # TODO: expose to json 
+            space_size = abs(space[0] - space[1])
+            middle = (space[0] + math.floor(space_size / 4), space[1] - math.floor(space_size / 4))
+            spliceLocation = random.randrange(middle[0], middle[1])
+            
+            # TODO: CHECK IF THIS WORKS LMFAO
+            # split up cell into children 
+            # partitionCell(topLeft, bottomRight, parent)
+            node.split(orientation, spliceLocation)
+            
+            tree.append(node)
+
+            frontier.append(node.children[0])
+            frontier.append(node.children[1])
+
+        # ------------- post processing -------------
+        skinnies : list = []
+        for node in leaves:
+            dims : tuple = node.getDimensions()
+            if dims[0] <= 2 or dims [1] <= 2:
+                skinnies.append(node)
+
+        for node in skinnies :
+            parent = node.parent
+            for child in parent.children:
+                if child in leaves:
+                    leaves.remove(child)
+            tree.remove(parent)
+            parent.children = None
+            leaves.append(parent)
+
+        final_tree = Tree(tree, leaves)
+        return final_tree
 # =====================================================
 # ============ ENTITY CLASS ===========================
 # =====================================================
@@ -79,3 +156,5 @@ class Entity :
         self.box            = box
         self.sprite         = sprite
         self.state          = state
+
+    
