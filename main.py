@@ -30,6 +30,13 @@ for leaf in tree_map.leaves : # leaf is a partitionNode
     for coord in box :
         world.tile_map[coord] = 1
 
+    # world.cellularAutomata(
+    #     leaf,   # area
+    #     2,      # asset to be placed
+    #     1,      # asset to be ignored
+    #     .5      # spawn chance w/ initial sprinkle
+    # )
+
 player = Entity(
     pygame.Rect(0, 0, TILE_SIZE, TILE_SIZE), 
     world.assets["dark player"],
@@ -71,12 +78,12 @@ while playing :
         if world.mode == 0 : # ** dark mode
             if world.tile_map[coord] == 0 :
                 raw_window.blit(world.tile_assets['dark base tile'], (TILE_SIZE * coord[0], TILE_SIZE * coord[1]))
-            if world.tile_map[coord] == 1 :
+            if world.tile_map[coord] == 2 :
                 raw_window.blit(world.tile_assets['dark mountain'], (TILE_SIZE * coord[0], TILE_SIZE * coord[1]))
         elif world.mode == 1 : # ** dark mode
             if world.tile_map[coord] == 0 :
                 raw_window.blit(world.tile_assets['light base tile'], (TILE_SIZE * coord[0], TILE_SIZE * coord[1]))
-            if world.tile_map[coord] == 1 :
+            if world.tile_map[coord] == 2 :
                 raw_window.blit(world.tile_assets['light mountain'], (TILE_SIZE * coord[0], TILE_SIZE * coord[1]))
             
         

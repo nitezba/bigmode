@@ -148,6 +148,45 @@ class World() :
 
         final_tree = Tree(tree, leaves)
         return final_tree
+    
+    # ============================ cellular automata function ============================
+    def cellularAutomata(self, area : partitionCell, asset_place : int = 1, asset_ignore : int = 0, spawn_chance : int = .5) :
+        num_iterations = 2
+        neighbor_requirement = 4
+
+        # for key in self.tile_map.keys() :
+        for key in area.getInternalCoords() :
+            place_tile = 1 if random.random() <= spawn_chance else 0
+
+            if place_tile :
+                # rocks.append(key)
+                self.tile_map[key] = asset_place
+
+        to_remove   : list  = []
+        to_add      : list  = []
+
+        for i in range(num_iterations):
+            for key in area.getInternalCoords() :
+                neighbors = self.getTileNeighbors(key)
+                count = 0
+                for row in neighbors.keys():
+                    for col in neighbors[row].keys() :
+                        neighbor_coord = neighbors[row][col]
+                        
+                        if neighbor_coord != None:
+                            if self.tile_map[neighbor_coord] == asset_place :
+                                count += 1
+                if count >= neighbor_requirement :
+                    to_add.append(key)
+                else :
+                    to_remove.append(key)
+
+            for coord in to_add :
+                self.tile_map[coord] = asset_place
+
+            for coord in to_remove :
+                self.tile_map[coord] = asset_ignore
+                
 # =====================================================
 # ============ ENTITY CLASS ===========================
 # =====================================================
