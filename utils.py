@@ -22,59 +22,49 @@ def load_dir(path) :
         images.append(load_image(path + '/' + img_name))
     return images
 
-def stringFromTuple (t : tuple) -> str:
-    ret = "("
-    for elt in t :
-        ret += str(elt) + ","
-    ret = ret[:-1]
-    ret += ")"
-    return ret
-
 # =====================================================
 # ============ WORLD CLASS ============================
 # =====================================================
 class World() :
     # ============================ init function ============================
     def __init__(self) -> None:
-    # ========= OPEN FILE =========
+        # getting world dictionary from data.json
         mapFile = open('data.json')
         data = json.load(mapFile)
         mapFile.close()
         world = data["world"]
-    # ========= LOAD TILE ASSETS =========
+
+        # load tile, genereal, animation assets into respective dictionaries
         tiles = world["tile_assets"]
-        # ** Instance variable
         self.tile_assets = {}
         for key in tiles :
             self.tile_assets[key] = load_image(tiles[key])
-    # ========= LOAD GENERAL ASSETS =========
+
         assets = world["assets"]
-        # ** Instance variable
         self.assets = {}
         for key in assets :
             if key == "animations" :
                 continue
             self.assets[key] = load_image(assets[key])
-    # ========= LOAD ANIMATIONS =========
+
         animations = assets["animations"]
         # ** Instance variable
         self.animations = {}
         for key in animations :
             self.animations[key] = load_dir(animations[key])
-    # ========= HANDLE MAP =========
-    # the absence of a coordinate in "map" in the json indicates that it's just a blank tile
-    # NOTE : tile_map dict will have raw tuples as keys, while json will have strings of tuples as keys
-        # ** Instance variable
+
+        # the absence of a coordinate in "map" in the json indicates that it's just a blank tile
+        # NOTE : tile_map dict will have raw tuples as keys, while json will have strings of tuples as keys
         self.tile_map = {}
         for y in range(TILES_DOWN) :
             for x in range(TILES_ACROSS) :
                 # DEFAULT VALUE POPULATION
-                if stringFromTuple((x, y)) not in world["map"].keys():
+                # if stringFromTuple((x, y)) not in world["map"].keys():
+                if str((x, y)) not in world["light world map"].keys():
                     self.tile_map[(x, y)] = 0
                 
         self.mode = 0
 
-    # ============================ get neighbors function ============================
     def getTileNeighbors(self, coord: tuple) -> dict :
         tiles = {
             "top" : {},
@@ -96,7 +86,14 @@ class World() :
          
         return tiles
     
-    # ============================ binary space partition function ============================
+    def getFirstValidCoord(self) -> tuple:
+        for key in self.tile_map :
+            if self.tile_map[key] == 0:
+                return key
+            
+    def switchMode(self) -> None :
+        self.mode = not self.mode
+ 
     def spacePartition(self, root : partitionCell) -> Tree: 
         tree = []
         leaves = []
@@ -149,7 +146,6 @@ class World() :
         final_tree = Tree(tree, leaves)
         return final_tree
     
-    # ============================ cellular automata function ============================
     def cellularAutomata(self, area : partitionCell, asset_place : int = 1, asset_ignore : int = 0, spawn_chance : int = .5) :
         num_iterations = 2
         neighbor_requirement = 4
@@ -186,7 +182,7 @@ class World() :
 
             for coord in to_remove :
                 self.tile_map[coord] = asset_ignore
-                
+
 # =====================================================
 # ============ ENTITY CLASS ===========================
 # =====================================================

@@ -1,16 +1,15 @@
-import pygame, sys, random, math, wave, os, json
+import pygame, sys, math, json
 
 from pygame.locals import *
 from utils import *
 from constants import *
 from helper_structures import *
 
-
 clock = pygame.time.Clock()
 
 pygame.init() 
 
-display_window = pygame.display.set_mode((WINDOW_WIDTH * 2, WINDOW_HEIGHT * 2), 0, 32)
+display_window = pygame.display.set_mode((WINDOW_WIDTH * 2, WINDOW_HEIGHT * 2), 0)
 raw_window = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
 
 # =====================================================
@@ -36,9 +35,10 @@ for leaf in tree_map.leaves : # leaf is a partitionNode
     #     1,      # asset to be ignored
     #     .5      # spawn chance w/ initial sprinkle
     # )
+player_start : tuple = tuple(i * TILE_SIZE for i in world.getFirstValidCoord())
 
 player = Entity(
-    pygame.Rect(0, 0, TILE_SIZE, TILE_SIZE), 
+    pygame.Rect(player_start[0], player_start[1], TILE_SIZE, TILE_SIZE), 
     world.assets["dark player"],
     None
 )
@@ -46,8 +46,7 @@ player = Entity(
 frame_start = 0
 frame_end = pygame.time.get_ticks()
 dt = frame_end - frame_start
-# every 10 seconds
-pygame.time.set_timer(TIMER_EVENT, 10000)
+pygame.time.set_timer(TIMER_EVENT, 10000) # every 10 seconds
 # =====================================================
 # ============ MAIN GAME LOOP =========================
 # =====================================================
@@ -55,7 +54,6 @@ while playing :
     frame_start = frame_end
     raw_window.fill((0,0,0))
     # ============ EVENT HANDLING ============
-    # ------------ single keypress event polling ------------
     for event in pygame.event.get() :
         if event.type == QUIT: 
             pygame.quit()
@@ -65,9 +63,8 @@ while playing :
                 pygame.quit()
                 sys.exit()
         if event.type == TIMER_EVENT :
-            world.mode = not world.mode
+            world.switchMode()
 
-    # ------------ key held down event polling ------------
     keys = pygame.key.get_pressed()
 
     # ============ STATE HANDLING ============
@@ -78,12 +75,12 @@ while playing :
         if world.mode == 0 : # ** dark mode
             if world.tile_map[coord] == 0 :
                 raw_window.blit(world.tile_assets['dark base tile'], (TILE_SIZE * coord[0], TILE_SIZE * coord[1]))
-            if world.tile_map[coord] == 2 :
+            if world.tile_map[coord] == 1 :
                 raw_window.blit(world.tile_assets['dark mountain'], (TILE_SIZE * coord[0], TILE_SIZE * coord[1]))
         elif world.mode == 1 : # ** dark mode
             if world.tile_map[coord] == 0 :
                 raw_window.blit(world.tile_assets['light base tile'], (TILE_SIZE * coord[0], TILE_SIZE * coord[1]))
-            if world.tile_map[coord] == 2 :
+            if world.tile_map[coord] == 1 :
                 raw_window.blit(world.tile_assets['light mountain'], (TILE_SIZE * coord[0], TILE_SIZE * coord[1]))
             
         
